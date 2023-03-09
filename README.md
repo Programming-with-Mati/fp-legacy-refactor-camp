@@ -7,7 +7,7 @@ Here is the link to the session: [Functional Programming & Refactoring in Java](
 ## Presenter
 Matías "Mati" Salerno
 
-Subject Matter Expert at Globant
+Subject Matter Expert at [Globant](https://www.globant.com/).
 
 Host of YouTube Channel [Programming With Mati](https://www.youtube.com/@programmingwithmati).
 
