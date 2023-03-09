@@ -8,7 +8,11 @@ import java.util.List;
 
 public class LegacyDeliveryAllocationService {
 
-    private DeliveryTruckRepository truckRepository;
+    private final DeliveryTruckRepository truckRepository;
+
+    public LegacyDeliveryAllocationService(DeliveryTruckRepository truckRepository) {
+        this.truckRepository = truckRepository;
+    }
 
     public List<PackageAllocation> allocatePackagesToTrucks(List<DeliveryPackage> deliveryPackages) {
 
