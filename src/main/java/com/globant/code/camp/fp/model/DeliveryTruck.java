@@ -47,17 +47,6 @@ public class DeliveryTruck {
         currentWeight = currentWeight + deliveryPackage.weight();
     }
 
-    public PackageAllocation allocate(DeliveryPackage deliveryPackage) {
-        var newTruck = new DeliveryTruck(id,
-                maxWeight,
-                maxVolume,
-                currentWeight + deliveryPackage.weight(),
-                currentVolume + deliveryPackage.volume(),
-                districts);
-
-        return PackageAllocation.allocated(deliveryPackage, newTruck);
-    }
-
     public String getId() {
         return id;
     }
@@ -104,5 +93,18 @@ public class DeliveryTruck {
 
     public void setDistricts(List<DeliveryDistrict> districts) {
         this.districts = districts;
+    }
+
+    public PackageAllocation allocate(DeliveryPackage aPackage) {
+        var newTruckState = new DeliveryTruck(
+                id,
+                maxWeight,
+                maxVolume,
+                currentWeight + aPackage.weight(),
+                currentVolume + aPackage.volume(),
+                districts
+        );
+
+        return PackageAllocation.allocated(aPackage, newTruckState);
     }
 }

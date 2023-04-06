@@ -3,51 +3,28 @@ import com.globant.code.camp.fp.model.DeliveryPackage;
 import com.globant.code.camp.fp.model.DeliveryTruck;
 import com.globant.code.camp.fp.model.PackageAllocation;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class LegacyDeliveryAllocationService {
 
     private final DeliveryTruckRepository truckRepository;
+    private final FunctionalAllocationStrategy allocationStrategy;
 
     public LegacyDeliveryAllocationService(DeliveryTruckRepository truckRepository) {
         this.truckRepository = truckRepository;
+        this.allocationStrategy = new FunctionalAllocationStrategy();
     }
 
     public List<PackageAllocation> allocatePackagesToTrucks(List<DeliveryPackage> deliveryPackages) {
 
         List<DeliveryTruck> deliveryTrucks = truckRepository.findAll();
+        deliveryPackages = Objects.requireNonNullElse(deliveryPackages, Collections.emptyList());
+        deliveryTrucks = Objects.requireNonNullElse(deliveryTrucks, Collections.emptyList());
 
-        if (deliveryPackages == null || deliveryPackages.isEmpty()) {
-            throw new RuntimeException("Delivery Packages can't be null");
-        }
-
-        if (deliveryTrucks == null || deliveryTrucks.isEmpty()) {
-            throw new RuntimeException("Delivery Trucks can't be null");
-        }
-
-        List<PackageAllocation> packageAllocations = new LinkedList<>();
-
-        for (DeliveryPackage deliveryPackage : deliveryPackages) {
-            PackageAllocation packageAllocation = null;
-            for (DeliveryTruck deliveryTruck : deliveryTrucks) {
-                if (
-                    (deliveryTruck.getDistricts().contains(deliveryPackage.district()) &&
-                            (deliveryTruck.getCurrentVolume() + deliveryPackage.volume() <= deliveryTruck.getMaxVolume()) &&
-                            (deliveryTruck.getCurrentWeight() + deliveryPackage.weight() <= deliveryTruck.getMaxWeight())
-                )) {
-                    packageAllocation = PackageAllocation.allocated(deliveryPackage, deliveryTruck);
-                    deliveryTruck.updateCurrentLoad(deliveryPackage);
-                    break;
-                }
-            }
-            if (packageAllocation == null) {
-                throw new RuntimeException("Unable to allocate package id: %s. No truck available".formatted(deliveryPackage.id()));
-            }
-            packageAllocations.add(packageAllocation);
-        }
-
-        return packageAllocations;
+        return allocationStrategy.allocate(deliveryPackages, deliveryTrucks);
     }
 
 }
